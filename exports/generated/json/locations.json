@@ -1,0 +1,12 @@
+[
+{"location_id": "LOC-000001", "location_name": "Warehouse 001", "location_type": "WAREHOUSE", "city": "City-01", "state": "State-01", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000002", "location_name": "Store 002", "location_type": "STORE", "city": "City-02", "state": "State-02", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000003", "location_name": "Distribution_Center 003", "location_type": "DISTRIBUTION_CENTER", "city": "City-03", "state": "State-03", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000004", "location_name": "Warehouse 004", "location_type": "WAREHOUSE", "city": "City-04", "state": "State-04", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000005", "location_name": "Store 005", "location_type": "STORE", "city": "City-05", "state": "State-05", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000006", "location_name": "Distribution_Center 006", "location_type": "DISTRIBUTION_CENTER", "city": "City-06", "state": "State-06", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000007", "location_name": "Warehouse 007", "location_type": "WAREHOUSE", "city": "City-07", "state": "State-07", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000008", "location_name": "Store 008", "location_type": "STORE", "city": "City-08", "state": "State-08", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000009", "location_name": "Distribution_Center 009", "location_type": "DISTRIBUTION_CENTER", "city": "City-09", "state": "State-09", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"},
+{"location_id": "LOC-000010", "location_name": "Warehouse 010", "location_type": "WAREHOUSE", "city": "City-10", "state": "State-10", "country": "India", "is_active": "True", "created_at": "2025-01-01 00:00:00"}
+]

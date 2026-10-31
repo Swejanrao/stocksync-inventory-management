@@ -1,0 +1,51 @@
+product_id,product_name,category,brand,unit_cost,unit_price,is_active,created_at
+PRD-000001,StockSync Product 000001,Home and Kitchen,Brand-007,341.48,666.94,True,2026-10-02 17:12:12
+PRD-000002,StockSync Product 000002,Toys,Brand-017,124.58,187.48,True,2025-02-15 21:32:09
+PRD-000003,StockSync Product 000003,Accessories,Brand-014,103.43,165.6,True,2026-07-29 21:54:30
+PRD-000004,StockSync Product 000004,Clothing,Brand-028,100.75,140.58,True,2026-04-04 10:52:26
+PRD-000005,StockSync Product 000005,Sports,Brand-019,228.24,448.63,True,2026-03-31 06:03:52
+PRD-000006,StockSync Product 000006,Home and Kitchen,Brand-019,177.11,225.67,True,2025-12-22 06:58:03
+PRD-000007,StockSync Product 000007,Books,Brand-066,37.3,50.01,True,2026-02-03 23:05:18
+PRD-000008,StockSync Product 000008,Beauty,Brand-079,170.24,390.69,True,2026-08-14 04:12:27
+PRD-000009,StockSync Product 000009,Grocery,Brand-091,211.12,277.74,True,2026-08-18 10:15:11
+PRD-000010,StockSync Product 000010,Beauty,Brand-068,391.35,533.83,True,2025-06-11 13:14:27
+PRD-000011,StockSync Product 000011,Sports,Brand-013,378.53,881.82,True,2025-08-20 02:21:42
+PRD-000012,StockSync Product 000012,Clothing,Brand-050,254.82,307.69,True,2025-06-20 20:30:36
+PRD-000013,StockSync Product 000013,Clothing,Brand-095,286.74,525.44,True,2026-02-18 23:40:29
+PRD-000014,StockSync Product 000014,Electronics,Brand-099,428.7,547.71,True,2026-04-06 16:36:05
+PRD-000015,StockSync Product 000015,Grocery,Brand-005,474.22,802.52,True,2025-07-04 19:02:42
+PRD-000016,StockSync Product 000016,Home and Kitchen,Brand-039,443.06,966.23,True,2026-02-06 05:12:29
+PRD-000017,StockSync Product 000017,Sports,Brand-094,253.68,474.93,True,2025-02-02 21:21:40
+PRD-000018,StockSync Product 000018,Clothing,Brand-004,429.32,776.48,True,2025-08-16 08:14:57
+PRD-000019,StockSync Product 000019,Electronics,Brand-094,292.89,370.7,True,2026-01-28 03:41:07
+PRD-000020,StockSync Product 000020,Furniture,Brand-056,388.51,661.28,True,2025-01-16 12:52:10
+PRD-000021,StockSync Product 000021,Books,Brand-089,232.76,382.0,True,2025-09-03 15:30:44
+PRD-000022,StockSync Product 000022,Toys,Brand-093,322.15,638.92,True,2026-02-15 01:14:38
+PRD-000023,StockSync Product 000023,Furniture,Brand-041,463.19,724.45,True,2026-02-04 16:14:00
+PRD-000024,StockSync Product 000024,Toys,Brand-073,474.2,1085.21,True,2025-10-03 22:34:50
+PRD-000025,StockSync Product 000025,Sports,Brand-023,359.6,805.6,True,2025-04-28 06:10:51
+PRD-000026,StockSync Product 000026,Furniture,Brand-058,253.08,456.96,True,2025-04-29 04:10:05
+PRD-000027,StockSync Product 000027,Grocery,Brand-089,325.27,393.84,True,2026-03-29 19:38:47
+PRD-000028,StockSync Product 000028,Toys,Brand-030,137.15,341.08,True,2026-10-11 02:25:41
+PRD-000029,StockSync Product 000029,Grocery,Brand-056,353.25,789.22,True,2026-06-18 08:48:38
+PRD-000030,StockSync Product 000030,Home and Kitchen,Brand-062,463.75,895.0,True,2025-07-10 20:22:21
+PRD-000031,StockSync Product 000031,Accessories,Brand-056,495.69,1066.59,True,2026-01-26 02:58:49
+PRD-000032,StockSync Product 000032,Beauty,Brand-044,290.73,382.63,True,2026-09-19 10:06:41
+PRD-000033,StockSync Product 000033,Clothing,Brand-078,32.93,76.6,True,2026-06-18 04:52:40
+PRD-000034,StockSync Product 000034,Sports,Brand-049,101.76,219.01,True,2026-04-14 20:05:05
+PRD-000035,StockSync Product 000035,Accessories,Brand-003,268.04,343.48,True,2025-04-29 23:12:10
+PRD-000036,StockSync Product 000036,Beauty,Brand-009,113.65,247.99,True,2025-03-18 10:36:16
+PRD-000037,StockSync Product 000037,Home and Kitchen,Brand-052,480.1,871.34,True,2025-11-26 08:37:05
+PRD-000038,StockSync Product 000038,Beauty,Brand-043,187.99,444.26,True,2026-04-17 06:48:49
+PRD-000039,StockSync Product 000039,Electronics,Brand-013,495.3,1116.89,True,2026-05-23 16:55:58
+PRD-000040,StockSync Product 000040,Grocery,Brand-017,319.23,597.52,True,2025-02-15 06:49:04
+PRD-000041,StockSync Product 000041,Grocery,Brand-062,146.31,209.55,True,2025-11-29 07:43:45
+PRD-000042,StockSync Product 000042,Accessories,Brand-029,186.06,301.69,True,2026-03-01 00:11:56
+PRD-000043,StockSync Product 000043,Books,Brand-050,74.0,183.04,True,2026-02-01 19:35:56
+PRD-000044,StockSync Product 000044,Beauty,Brand-065,280.53,616.24,True,2026-07-26 08:14:04
+PRD-000045,StockSync Product 000045,Home and Kitchen,Brand-012,287.81,678.55,True,2025-03-01 01:57:55
+PRD-000046,StockSync Product 000046,Grocery,Brand-006,457.0,889.66,True,2026-07-25 09:42:33
+PRD-000047,StockSync Product 000047,Toys,Brand-088,384.29,739.11,True,2025-08-31 11:37:53
+PRD-000048,StockSync Product 000048,Home and Kitchen,Brand-067,85.29,139.78,True,2025-08-01 11:30:13
+PRD-000049,StockSync Product 000049,Electronics,Brand-008,324.5,793.09,True,2026-03-05 08:11:50
+PRD-000050,StockSync Product 000050,Home and Kitchen,Brand-037,273.62,414.21,True,2025-10-05 17:15:26

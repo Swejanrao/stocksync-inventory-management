@@ -1,0 +1,11 @@
+location_id,location_name,location_type,city,state,country,is_active,created_at
+LOC-000001,Warehouse 001,WAREHOUSE,City-01,State-01,India,True,2025-01-01 00:00:00
+LOC-000002,Store 002,STORE,City-02,State-02,India,True,2025-01-01 00:00:00
+LOC-000003,Distribution_Center 003,DISTRIBUTION_CENTER,City-03,State-03,India,True,2025-01-01 00:00:00
+LOC-000004,Warehouse 004,WAREHOUSE,City-04,State-04,India,True,2025-01-01 00:00:00
+LOC-000005,Store 005,STORE,City-05,State-05,India,True,2025-01-01 00:00:00
+LOC-000006,Distribution_Center 006,DISTRIBUTION_CENTER,City-06,State-06,India,True,2025-01-01 00:00:00
+LOC-000007,Warehouse 007,WAREHOUSE,City-07,State-07,India,True,2025-01-01 00:00:00
+LOC-000008,Store 008,STORE,City-08,State-08,India,True,2025-01-01 00:00:00
+LOC-000009,Distribution_Center 009,DISTRIBUTION_CENTER,City-09,State-09,India,True,2025-01-01 00:00:00
+LOC-000010,Warehouse 010,WAREHOUSE,City-10,State-10,India,True,2025-01-01 00:00:00

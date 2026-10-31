@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-CORS
+python-dotenv
+PyMySQL
+cryptography
+pytest
+pandas

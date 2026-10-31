@@ -1,0 +1,6 @@
+[
+{"scenario_id": "ANOM-001", "entity_type": "inventory_balance", "entity_id": "BAL-00000001", "label": "1", "anomaly_type": "balance_mismatch"},
+{"scenario_id": "ANOM-002", "entity_type": "reservation", "entity_id": "RES-ORD-2026-000001-01", "label": "1", "anomaly_type": "reservation_oversell"},
+{"scenario_id": "ANOM-003", "entity_type": "order", "entity_id": "ORD-2026-000001", "label": "1", "anomaly_type": "blocked_stock_fulfillment"},
+{"scenario_id": "ANOM-004", "entity_type": "inventory_transfer", "entity_id": "TRF-ANOM-004", "label": "1", "anomaly_type": "transfer_double_count"}
+]

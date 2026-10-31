@@ -1,0 +1,5 @@
+scenario_id,entity_type,entity_id,label,anomaly_type
+ANOM-001,inventory_balance,BAL-00000001,1,balance_mismatch
+ANOM-002,reservation,RES-ORD-2026-000001-01,1,reservation_oversell
+ANOM-003,order,ORD-2026-000001,1,blocked_stock_fulfillment
+ANOM-004,inventory_transfer,TRF-ANOM-004,1,transfer_double_count

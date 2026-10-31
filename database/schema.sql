@@ -1,0 +1,133 @@
+
+-- ============================================================
+-- STOCKSYNC: UNIFIED INVENTORY MANAGEMENT SYSTEM
+-- Relational schema reference
+-- ============================================================
+
+-- MASTER DATA
+--
+-- Product (1) -------- (Many) SKU
+-- Location (1) ------- (Many) Child Location
+--
+-- Product:
+--   PK: id
+--   UNIQUE: product_code
+--
+-- SKU:
+--   PK: id
+--   FK: product_id -> Product.id
+--   UNIQUE: sku_code
+--
+-- Location:
+--   PK: id
+--   FK: parent_id -> Location.id (optional)
+--   UNIQUE: location_code
+
+-- INVENTORY
+--
+-- SKU (1) ------------- (Many) InventoryBalance
+-- Location (1) -------- (Many) InventoryBalance
+--
+-- InventoryBalance:
+--   PK: id
+--   FK: sku_id -> SKU.id
+--   FK: location_id -> Location.id
+--   UNIQUE: (sku_id, location_id)
+--
+-- InventoryMovement:
+--   PK: id
+--   UNIQUE: movement_code
+--   FK: sku_id -> SKU.id
+--   FK: from_location_id -> Location.id (optional)
+--   FK: to_location_id -> Location.id (optional)
+--
+-- Inventory movements are append-only business events.
+-- Corrections should be represented by new compensating movements.
+
+-- ORDERS
+--
+-- CustomerOrder (1) --- (Many) OrderLine
+-- SKU (1) ------------- (Many) OrderLine
+-- CustomerOrder (1) --- (Many) Reservation
+-- OrderLine (1) ------- (Many) Reservation
+--
+-- CustomerOrder:
+--   PK: id
+--   UNIQUE: order_code
+--   FK: fulfillment_location_id -> Location.id (optional)
+--
+-- OrderLine:
+--   PK: id
+--   FK: order_id -> CustomerOrder.id
+--   FK: sku_id -> SKU.id
+--
+-- Reservation:
+--   PK: id
+--   UNIQUE: reservation_code
+--   FK: order_id -> CustomerOrder.id
+--   FK: order_line_id -> OrderLine.id
+--   FK: sku_id -> SKU.id
+--   FK: location_id -> Location.id
+--
+-- Reservation lifecycle:
+--   active -> consumed
+--   active -> released
+--   active -> expired
+--
+-- Reservations must have a valid expiry timestamp.
+
+-- SHIPMENTS AND TRANSFERS
+--
+-- CustomerOrder (1) --- (Many) Shipment
+-- Location (1) -------- (Many) Shipment origin
+-- Location (1) -------- (Many) Shipment destination
+--
+-- Shipment:
+--   PK: id
+--   UNIQUE: shipment_code
+--   FK: order_id -> CustomerOrder.id
+--   FK: origin_location_id -> Location.id
+--   FK: destination_location_id -> Location.id
+--
+-- Transfer inventory is represented by paired movement events:
+--   transfer_out: decreases source on-hand and increases
+--                 destination in-transit quantity.
+--   transfer_in: decreases destination in-transit and increases
+--                destination on-hand.
+--
+-- A transfer must not be counted as received before confirmation.
+
+-- REPLENISHMENT
+--
+-- SKU (1) ------------- (Many) ReplenishmentRule
+-- Location (1) -------- (Many) ReplenishmentRule
+--
+-- ReplenishmentRule:
+--   PK: id
+--   FK: sku_id -> SKU.id
+--   FK: location_id -> Location.id
+--   UNIQUE: (sku_id, location_id, effective_from)
+--
+-- Effective dates determine which rule applies.
+
+-- EVENT HISTORY
+--
+-- InventoryEvent:
+--   PK: id
+--   entity_type + entity_id identify the affected entity.
+--   event_type describes the action.
+--   old_state and new_state preserve lifecycle changes.
+--   event_at records when the event occurred.
+--
+-- Event history should be append-only.
+
+-- IMPORTANT DESIGN RULES
+--
+-- 1. Master records must exist before dependent records.
+-- 2. Foreign keys must reference valid parent records.
+-- 3. InventoryMovement records must not be silently overwritten.
+-- 4. ATP must be calculated from inventory source records.
+-- 5. Reservations must be released, consumed or expired explicitly.
+-- 6. In-transit stock must not be counted as received stock.
+-- 7. Anomaly labels must remain outside normal model input data.
+-- 8. Baseline data must reconcile before anomaly scenarios are added.

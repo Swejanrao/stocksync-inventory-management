@@ -1,0 +1,89 @@
+{
+    "project": "StockSync",
+    "dataset_type": "synthetic_baseline",
+    "seed": 20261022,
+    "generated_at": "2026-11-01T01:59:33",
+    "parameters": {
+        "products": 50,
+        "locations": 10,
+        "movements": 1000,
+        "orders": 100
+    },
+    "counts": {
+        "products": 50,
+        "skus": 50,
+        "locations": 10,
+        "inventory_balances": 500,
+        "inventory_movements": 1029,
+        "orders": 100,
+        "order_lines": 84,
+        "reservations": 84,
+        "shipments": 29,
+        "replenishment_rules": 500,
+        "channel_buffers": 150,
+        "order_status_counts": {
+            "RESERVED": 49,
+            "FULFILLED": 29,
+            "PENDING": 16,
+            "CANCELLED": 6
+        }
+    },
+    "files": {
+        "channel_buffers.csv": {
+            "rows": 150,
+            "sha256": "250427c8b2bff5134c831bb9b4fa119b5a53ef17873df2297ff487abf904c61b",
+            "size_bytes": 6115
+        },
+        "inventory_balances.csv": {
+            "rows": 500,
+            "sha256": "4d365ef38580392649bf68927ca6ee59adad42aece0f8efae0ef38b27c11ae91",
+            "size_bytes": 36240
+        },
+        "inventory_movements.csv": {
+            "rows": 1029,
+            "sha256": "92d320e1addc0323a5bb54f913a63782a4fa4529202ee61ba52d1e58f7eaa4c9",
+            "size_bytes": 107356
+        },
+        "locations.csv": {
+            "rows": 10,
+            "sha256": "cbf0ae130ad186bce998497bc669c83bff366b19c7240d5b1b8947d92709e1f6",
+            "size_bytes": 957
+        },
+        "order_lines.csv": {
+            "rows": 84,
+            "sha256": "cd368fefb1825dbe4acc8628bfe6a43f178da7a166dbc7d9087bf7bef4a40258",
+            "size_bytes": 4951
+        },
+        "orders.csv": {
+            "rows": 100,
+            "sha256": "38f893e36b49d745453cba4989d8144b520cf5d83496674c03bc2866a1acda6a",
+            "size_bytes": 10416
+        },
+        "products.csv": {
+            "rows": 50,
+            "sha256": "0160991be68ecb5439264309056e303bad4603fe4c95765fd175b4b85b9813bd",
+            "size_bytes": 4847
+        },
+        "replenishment_rules.csv": {
+            "rows": 500,
+            "sha256": "9bfa53f9a76b74ed4029a993339d6046d14e1af8b586af6acb0d67b95970997e",
+            "size_bytes": 26628
+        },
+        "reservations.csv": {
+            "rows": 84,
+            "sha256": "273b8683c9cd404110a4259f2865f43a75f7e4605760ff8c503f787505b8e10a",
+            "size_bytes": 9699
+        },
+        "shipments.csv": {
+            "rows": 29,
+            "sha256": "08c44a6ccc11410c68416d5b045be73519d156eafd57c2bce57825f8a36104cc",
+            "size_bytes": 2855
+        },
+        "skus.csv": {
+            "rows": 50,
+            "sha256": "00f5658c51869209581e6368cd56ceea875514f208034ceaf4f306495a999710",
+            "size_bytes": 6416
+        }
+    },
+    "status": "GENERATED"
+}

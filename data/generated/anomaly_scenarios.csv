@@ -1,0 +1,5 @@
+scenario_id,anomaly_type,entity_type,entity_id,field_name,baseline_value,anomalous_value,description,evidence
+ANOM-001,balance_mismatch,inventory_balance,BAL-00000001,on_hand,306,331,The recorded on-hand quantity is 25 units higher than the movement ledger.,Ledger quantity is 0; baseline recorded quantity is 306.
+ANOM-002,reservation_oversell,reservation,RES-ORD-2026-000001-01,quantity,1,398,The reservation quantity is deliberately increased beyond the available stock.,"On hand=407, blocked=2, reserved=1, safety stock=17, available=387."
+ANOM-003,blocked_stock_fulfillment,order,ORD-2026-000001,fulfillment_stock_source,unblocked_stock,blocked_stock,The order is marked as fulfilled using inventory that is blocked or damaged.,Related SKU=SKU-000001; location=LOC-000001; blocked quantity used for scenario=1.
+ANOM-004,transfer_double_count,inventory_transfer,TRF-ANOM-004,destination_stock_status,in_transit,received_before_confirmation,The same transferred quantity is counted at the source and destination before receipt is confirmed.,This is a synthetic transfer scenario. The baseline generator does not create transfer records yet.
