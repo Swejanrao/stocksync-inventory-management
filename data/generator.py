@@ -1,5 +1,3 @@
-
-
 """
 StockSync - Synthetic Inventory Data Generator
 

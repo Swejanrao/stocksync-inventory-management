@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from decimal import Decimal
 
@@ -17,6 +18,7 @@ from ..models import (
     Shipment,
     ReplenishmentRule,
 )
+
 from ..services.inventory import (
     InventoryError,
     post_movement,
@@ -25,11 +27,13 @@ from ..services.inventory import (
     replenishment_recommendations,
     reconcile_balance,
 )
+
 from ..services.orders import (
     create_order,
     release_order,
     fulfill_order,
 )
+
 from ..services.transfers import (
     create_transfer,
     receive_transfer,
@@ -39,12 +43,13 @@ from ..services.transfers import (
 api_bp = Blueprint("api", __name__)
 
 
-# --------------------------------------------------
-# Common helpers
-# --------------------------------------------------
+# ==================================================
+# COMMON HELPERS
+# ==================================================
 
 def serialize(value):
-    """Convert dates and Decimal values into JSON-safe values."""
+    """Convert common Python values into JSON-safe values."""
+
     if isinstance(value, datetime):
         return value.isoformat()
 
@@ -54,18 +59,65 @@ def serialize(value):
     return value
 
 
+def serialize_object(obj):
+    """Convert an SQLAlchemy object into a JSON-safe dictionary."""
+
+    if obj is None:
+        return None
+
+    if isinstance(obj, dict):
+        return {
+            key: serialize_object(value)
+            for key, value in obj.items()
+        }
+
+    if isinstance(obj, (list, tuple)):
+        return [serialize_object(item) for item in obj]
+
+    if isinstance(obj, (datetime, Decimal)):
+        return serialize(obj)
+
+    if hasattr(obj, "__table__"):
+        return {
+            column.name: serialize(
+                getattr(obj, column.name)
+            )
+            for column in obj.__table__.columns
+        }
+
+    return obj
+
+
+def serialize_movement(movement):
+    """Serialize an inventory movement."""
+
+    return {
+        "id": movement.id,
+        "movement_code": movement.movement_code,
+        "sku_id": movement.sku_id,
+        "from_location_id": movement.from_location_id,
+        "to_location_id": movement.to_location_id,
+        "movement_type": movement.movement_type,
+        "quantity": movement.quantity,
+        "reference_type": movement.reference_type,
+        "reference_id": movement.reference_id,
+        "occurred_at": serialize(movement.occurred_at),
+        "note": movement.note,
+    }
+
+
 def success(data=None, message="Success", status=200):
     return jsonify({
         "success": True,
         "message": message,
-        "data": data
+        "data": serialize_object(data),
     }), status
 
 
 def error(message, status=400):
     return jsonify({
         "success": False,
-        "error": str(message)
+        "error": str(message),
     }), status
 
 
@@ -82,26 +134,33 @@ def get_int(data, field, required=True):
         return None
 
     try:
-        return int(value)
+        number = int(value)
     except (TypeError, ValueError):
         raise ValueError(f"{field} must be an integer")
+
+    return number
 
 
 def get_positive_number(data, field):
     value = data.get(field)
 
-    if value is None:
+    if value is None or value == "":
         raise ValueError(f"{field} is required")
 
     try:
-        number = float(value)
-    except (TypeError, ValueError):
-        raise ValueError(f"{field} must be a number")
+        number = Decimal(str(value))
+    except Exception:
+        raise ValueError(f"{field} must be a valid number")
 
-    if number <= 0:
+    if not number.is_finite() or number <= 0:
         raise ValueError(f"{field} must be greater than zero")
 
-    return number
+    if number != number.to_integral_value():
+        raise ValueError(
+            f"{field} must be a positive whole number"
+        )
+
+    return int(number)
 
 
 def commit_or_error():
@@ -110,12 +169,12 @@ def commit_or_error():
         return None
     except Exception as exc:
         db.session.rollback()
-        return error(str(exc), 400)
+        return error(exc, 400)
 
 
-# --------------------------------------------------
-# Dashboard summary
-# --------------------------------------------------
+# ==================================================
+# DASHBOARD SUMMARY
+# ==================================================
 
 @api_bp.get("/summary")
 def summary():
@@ -129,26 +188,39 @@ def summary():
             "reservations": Reservation.query.count(),
             "shipments": Shipment.query.count(),
             "inventory_records": InventoryBalance.query.count(),
+
             "total_on_hand": db.session.query(
-                func.coalesce(func.sum(InventoryBalance.on_hand), 0)
+                func.coalesce(
+                    func.sum(InventoryBalance.on_hand), 0
+                )
             ).scalar(),
+
             "total_reserved": db.session.query(
-                func.coalesce(func.sum(InventoryBalance.reserved), 0)
+                func.coalesce(
+                    func.sum(InventoryBalance.reserved), 0
+                )
             ).scalar(),
+
             "total_blocked": db.session.query(
-                func.coalesce(func.sum(InventoryBalance.blocked), 0)
+                func.coalesce(
+                    func.sum(InventoryBalance.blocked), 0
+                )
             ).scalar(),
+
             "total_in_transit": db.session.query(
-                func.coalesce(func.sum(InventoryBalance.in_transit), 0)
+                func.coalesce(
+                    func.sum(InventoryBalance.in_transit), 0
+                )
             ).scalar(),
         })
+
     except Exception as exc:
         return error(exc, 500)
 
 
-# --------------------------------------------------
-# Products
-# --------------------------------------------------
+# ==================================================
+# PRODUCTS
+# ==================================================
 
 @api_bp.get("/products")
 def get_products():
@@ -172,13 +244,20 @@ def add_product():
     data = get_json()
 
     try:
-        product_code = str(data.get("product_code", "")).strip()
+        product_code = str(
+            data.get("product_code", "")
+        ).strip()
+
         name = str(data.get("name", "")).strip()
 
         if not product_code or not name:
-            raise ValueError("product_code and name are required")
+            raise ValueError(
+                "product_code and name are required"
+            )
 
-        if Product.query.filter_by(product_code=product_code).first():
+        if Product.query.filter_by(
+            product_code=product_code
+        ).first():
             raise ValueError("Product code already exists")
 
         product = Product(
@@ -201,14 +280,15 @@ def add_product():
     except ValueError as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# SKUs
-# --------------------------------------------------
+# ==================================================
+# SKUS
+# ==================================================
 
 @api_bp.get("/skus")
 def get_skus():
@@ -242,7 +322,7 @@ def add_sku():
         if SKU.query.filter_by(sku_code=sku_code).first():
             raise ValueError("SKU code already exists")
 
-        if not Product.query.get(product_id):
+        if not db.session.get(Product, product_id):
             raise ValueError("Product does not exist")
 
         unit_cost = float(data.get("unit_cost", 0))
@@ -271,14 +351,15 @@ def add_sku():
     except ValueError as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# Locations
-# --------------------------------------------------
+# ==================================================
+# LOCATIONS
+# ==================================================
 
 @api_bp.get("/locations")
 def get_locations():
@@ -303,24 +384,38 @@ def add_location():
     data = get_json()
 
     try:
-        location_code = str(data.get("location_code", "")).strip()
+        location_code = str(
+            data.get("location_code", "")
+        ).strip()
+
         name = str(data.get("name", "")).strip()
 
         if not location_code or not name:
-            raise ValueError("location_code and name are required")
+            raise ValueError(
+                "location_code and name are required"
+            )
 
-        if Location.query.filter_by(location_code=location_code).first():
+        if Location.query.filter_by(
+            location_code=location_code
+        ).first():
             raise ValueError("Location code already exists")
 
-        parent_id = get_int(data, "parent_id", required=False)
+        parent_id = get_int(
+            data, "parent_id", required=False
+        )
 
-        if parent_id is not None and not Location.query.get(parent_id):
+        if (
+            parent_id is not None
+            and not db.session.get(Location, parent_id)
+        ):
             raise ValueError("Parent location does not exist")
 
         location = Location(
             location_code=location_code,
             name=name,
-            location_type=data.get("location_type", "warehouse"),
+            location_type=data.get(
+                "location_type", "warehouse"
+            ),
             channel=data.get("channel"),
             parent_id=parent_id,
             active=bool(data.get("active", True)),
@@ -338,14 +433,15 @@ def add_location():
     except ValueError as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# Inventory balances
-# --------------------------------------------------
+# ==================================================
+# INVENTORY BALANCES
+# ==================================================
 
 @api_bp.get("/inventory")
 def get_inventory():
@@ -356,7 +452,10 @@ def get_inventory():
     result = []
 
     for row in rows:
-        atp = available_to_promise(row.sku_id, row.location_id)
+        atp = available_to_promise(
+            row.sku_id,
+            row.location_id
+        )
 
         result.append({
             "id": row.id,
@@ -374,9 +473,9 @@ def get_inventory():
     return success(result)
 
 
-# --------------------------------------------------
-# Inventory movements
-# --------------------------------------------------
+# ==================================================
+# INVENTORY MOVEMENTS
+# ==================================================
 
 @api_bp.get("/movements")
 def get_movements():
@@ -388,21 +487,10 @@ def get_movements():
     ).limit(limit).all()
 
     return success([
-        {
-            "id": m.id,
-            "movement_code": m.movement_code,
-            "sku_id": m.sku_id,
-            "from_location_id": m.from_location_id,
-            "to_location_id": m.to_location_id,
-            "movement_type": m.movement_type,
-            "quantity": m.quantity,
-            "reference_type": m.reference_type,
-            "reference_id": m.reference_id,
-            "occurred_at": serialize(m.occurred_at),
-            "note": m.note,
-        }
-        for m in rows
+        serialize_movement(movement)
+        for movement in rows
     ])
+
 
 
 @api_bp.post("/movements")
@@ -410,18 +498,25 @@ def add_movement():
     data = get_json()
 
     try:
-        movement_type = str(data.get("movement_type", "")).strip()
+        movement_type = str(
+            data.get("movement_type", "")
+        ).strip().lower()
+
+        if not movement_type:
+            raise ValueError("movement_type is required")
+
         sku_id = get_int(data, "sku_id")
         quantity = get_positive_number(data, "quantity")
 
         from_location_id = get_int(
             data, "from_location_id", required=False
         )
+
         to_location_id = get_int(
             data, "to_location_id", required=False
         )
 
-        result = post_movement(
+        movement = post_movement(
             movement_type=movement_type,
             sku_id=sku_id,
             quantity=quantity,
@@ -432,19 +527,28 @@ def add_movement():
             note=data.get("note"),
         )
 
-        return success(result, "Movement recorded", 201)
+        # IMPORTANT: Save the movement and inventory balance.
+        db.session.commit()
+
+        return success(
+            serialize_object(movement),
+            "Movement recorded successfully",
+            201
+        )
 
     except (ValueError, InventoryError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
-        return error(exc)
+        return error(exc, 500)
 
 
-# --------------------------------------------------
-# Orders
-# --------------------------------------------------
+
+# ==================================================
+# ORDERS
+# ==================================================
 
 @api_bp.get("/orders")
 def get_orders():
@@ -460,8 +564,11 @@ def get_orders():
             "order_code": order.order_code,
             "channel": order.channel,
             "status": order.status,
-            "fulfillment_location_id": order.fulfillment_location_id,
+            "fulfillment_location_id": (
+                order.fulfillment_location_id
+            ),
             "created_at": serialize(order.created_at),
+
             "lines": [
                 {
                     "id": line.id,
@@ -483,24 +590,37 @@ def add_order():
 
     try:
         channel = data.get("channel", "online")
-        location_id = get_int(data, "fulfillment_location_id")
+
+        location_id = get_int(
+            data, "fulfillment_location_id"
+        )
+
         lines = data.get("lines")
 
         if not isinstance(lines, list) or not lines:
-            raise ValueError("At least one order line is required")
+            raise ValueError(
+                "At least one order line is required"
+            )
 
         result = create_order(
             channel=channel,
             lines=lines,
             fulfillment_location_id=location_id,
-            reservation_minutes=int(data.get("reservation_minutes", 20)),
+            reservation_minutes=int(
+                data.get("reservation_minutes", 20)
+            ),
         )
 
-        return success(result, "Order created and stock reserved", 201)
+        return success(
+            serialize_object(result),
+            "Order created and stock reserved",
+            201
+        )
 
     except (ValueError, InventoryError, KeyError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
@@ -510,10 +630,16 @@ def add_order():
 def cancel_order(order_id):
     try:
         result = release_order(order_id)
-        return success(result, "Order cancelled and reservations released")
+
+        return success(
+            serialize_object(result),
+            "Order cancelled and reservations released"
+        )
+
     except (ValueError, InventoryError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
@@ -523,23 +649,34 @@ def cancel_order(order_id):
 def fulfill_order_api(order_id):
     try:
         result = fulfill_order(order_id)
-        return success(result, "Order fulfilled")
+
+        return success(
+            serialize_object(result),
+            "Order fulfilled"
+        )
+
     except (ValueError, InventoryError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# Transfers
-# --------------------------------------------------
+# ==================================================
+# TRANSFERS
+# ==================================================
 
 @api_bp.get("/transfers")
 def get_transfers():
     try:
-        return success(list_transfers())
+        result = list_transfers()
+
+        return success(
+            serialize_object(result)
+        )
+
     except Exception as exc:
         return error(exc, 500)
 
@@ -551,18 +688,29 @@ def add_transfer():
     try:
         result = create_transfer(
             sku_id=get_int(data, "sku_id"),
-            source_location_id=get_int(data, "source_location_id"),
-            destination_location_id=get_int(data, "destination_location_id"),
-            quantity=get_positive_number(data, "quantity"),
+            source_location_id=get_int(
+                data, "source_location_id"
+            ),
+            destination_location_id=get_int(
+                data, "destination_location_id"
+            ),
+            quantity=get_positive_number(
+                data, "quantity"
+            ),
             reference_id=data.get("reference_id"),
             note=data.get("note"),
         )
 
-        return success(result, "Transfer created", 201)
+        return success(
+            serialize_object(result),
+            "Transfer created",
+            201
+        )
 
     except (ValueError, InventoryError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
@@ -575,26 +723,36 @@ def receive_transfer_api():
     try:
         result = receive_transfer(
             sku_id=get_int(data, "sku_id"),
-            source_location_id=get_int(data, "source_location_id"),
-            destination_location_id=get_int(data, "destination_location_id"),
-            quantity=get_positive_number(data, "quantity"),
+            source_location_id=get_int(
+                data, "source_location_id"
+            ),
+            destination_location_id=get_int(
+                data, "destination_location_id"
+            ),
+            quantity=get_positive_number(
+                data, "quantity"
+            ),
             reference_id=data.get("reference_id"),
             note=data.get("note"),
         )
 
-        return success(result, "Transfer received")
+        return success(
+            serialize_object(result),
+            "Transfer received"
+        )
 
     except (ValueError, InventoryError) as exc:
         db.session.rollback()
         return error(exc)
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# Reservations
-# --------------------------------------------------
+# ==================================================
+# RESERVATIONS
+# ==================================================
 
 @api_bp.get("/reservations")
 def get_reservations():
@@ -624,43 +782,55 @@ def get_reservations():
 def expire_due_reservations():
     try:
         count = expire_reservations()
+
         return success({
             "expired_count": count
         }, "Expired reservations processed")
+
     except Exception as exc:
         db.session.rollback()
         return error(exc)
 
 
-# --------------------------------------------------
-# Replenishment
-# --------------------------------------------------
+# ==================================================
+# REPLENISHMENT
+# ==================================================
 
 @api_bp.get("/replenishment")
 def get_replenishment():
     try:
-        return success(replenishment_recommendations())
+        return success(
+            serialize_object(
+                replenishment_recommendations()
+            )
+        )
+
     except Exception as exc:
         return error(exc, 500)
 
 
-# --------------------------------------------------
-# Reconciliation
-# --------------------------------------------------
+# ==================================================
+# RECONCILIATION
+# ==================================================
 
-@api_bp.get("/reconciliation/<int:sku_id>/<int:location_id>")
+@api_bp.get(
+    "/reconciliation/<int:sku_id>/<int:location_id>"
+)
 def inventory_reconciliation(sku_id, location_id):
     try:
         return success(
-            reconcile_balance(sku_id, location_id)
+            serialize_object(
+                reconcile_balance(sku_id, location_id)
+            )
         )
+
     except Exception as exc:
         return error(exc)
 
 
-# --------------------------------------------------
-# Shipments
-# --------------------------------------------------
+# ==================================================
+# SHIPMENTS
+# ==================================================
 
 @api_bp.get("/shipments")
 def get_shipments():
@@ -674,10 +844,13 @@ def get_shipments():
             "shipment_code": s.shipment_code,
             "order_id": s.order_id,
             "origin_location_id": s.origin_location_id,
-            "destination_location_id": s.destination_location_id,
+            "destination_location_id": (
+                s.destination_location_id
+            ),
             "status": s.status,
             "shipped_at": serialize(s.shipped_at),
             "delivered_at": serialize(s.delivered_at),
         }
         for s in shipments
     ])
+

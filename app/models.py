@@ -36,6 +36,17 @@ class Product(db.Model):
         default=True,
         nullable=False
     )
+    unit_cost = db.Column(
+     db.Numeric(12, 2),
+     default=0,
+     nullable=False
+    )
+
+    created_at = db.Column(
+     db.DateTime,
+     default=current_time,
+     nullable=False
+   )
 
     skus = db.relationship(
         "SKU",
@@ -80,7 +91,15 @@ class SKU(db.Model):
         default=True,
         nullable=False
     )
+    barcode = db.Column(db.String(50), unique=True, nullable=True)
+    weight_kg = db.Column(db.Numeric(10, 3), default=0, nullable=False)
+    unit_price = db.Column(db.Numeric(12, 2), default=0, nullable=False)
 
+    created_at = db.Column(
+      db.DateTime,
+      default=current_time,
+      nullable=False
+   )
     product = db.relationship(
         "Product",
         back_populates="skus"
@@ -130,6 +149,15 @@ class Location(db.Model):
         "Location",
         remote_side=[id],
         backref="children"
+    )
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(100))
+    country = db.Column(db.String(100))
+
+    created_at = db.Column(
+     db.DateTime,
+     default=current_time,
+     nullable=False
     )
 
 
@@ -201,8 +229,7 @@ class InventoryMovement(db.Model):
 
     __tablename__ = "inventory_movements"
 
-    id = db.Column(db.BigInteger, primary_key=True)
-
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     movement_code = db.Column(
         db.String(50),
         unique=True,
@@ -217,12 +244,14 @@ class InventoryMovement(db.Model):
 
     from_location_id = db.Column(
         db.Integer,
-        db.ForeignKey("locations.id")
+        db.ForeignKey("locations.id"),
+        nullable=True
     )
 
     to_location_id = db.Column(
         db.Integer,
-        db.ForeignKey("locations.id")
+        db.ForeignKey("locations.id"),
+        nullable=True
     )
 
     movement_type = db.Column(
@@ -235,7 +264,7 @@ class InventoryMovement(db.Model):
         nullable=False
     )
 
-    reference_type = db.Column(db.String(40))
+    reference_type = db.Column(db.String(40),nullable=True)
 
     reference_id = db.Column(db.String(80))
 
@@ -245,7 +274,7 @@ class InventoryMovement(db.Model):
         nullable=False
     )
 
-    note = db.Column(db.String(255))
+    note = db.Column(db.String(255),nullable=True)
 
 
 class CustomerOrder(db.Model):
@@ -282,7 +311,15 @@ class CustomerOrder(db.Model):
         default=current_time,
         nullable=False
     )
+    customer_code = db.Column(db.String(50))
+    order_total = db.Column(db.Numeric(14, 2), default=0, nullable=False)
 
+    updated_at = db.Column(
+     db.DateTime,
+     default=current_time,
+     onupdate=current_time,
+     nullable=False
+  )
     lines = db.relationship(
         "OrderLine",
         back_populates="order",
@@ -430,6 +467,8 @@ class Shipment(db.Model):
     shipped_at = db.Column(db.DateTime)
 
     delivered_at = db.Column(db.DateTime)
+    carrier = db.Column(db.String(100))
+    tracking_number = db.Column(db.String(100))
 
 
 class ReplenishmentRule(db.Model):
@@ -479,6 +518,23 @@ class ReplenishmentRule(db.Model):
         default=False,
         nullable=False
     )
+    reorder_quantity = db.Column(
+     db.Integer,
+     default=0,
+     nullable=False
+   )
+
+    safety_stock = db.Column(
+     db.Integer,
+     default=0,
+     nullable=False
+    )
+
+    active = db.Column(
+     db.Boolean,
+      default=True,
+     nullable=False
+   )
 
     effective_from = db.Column(
         db.DateTime,
@@ -520,4 +576,39 @@ class InventoryEvent(db.Model):
         nullable=False
     )
 
-    details = db.Column(db.JSON)
+    details = db.Column(db.JSON)                      
+    
+class ChannelBuffer(db.Model):
+
+    __tablename__ = "channel_buffers"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    buffer_code = db.Column(
+        db.String(50),
+        unique=True,
+        nullable=False
+    )
+
+    sku_id = db.Column(
+        db.Integer,
+        db.ForeignKey("skus.id"),
+        nullable=False
+    )
+
+    channel = db.Column(
+        db.String(30),
+        nullable=False
+    )
+
+    buffer_quantity = db.Column(
+        db.Integer,
+        default=0,
+        nullable=False
+    )
+
+    active = db.Column(
+        db.Boolean,
+        default=True,
+        nullable=False
+    )

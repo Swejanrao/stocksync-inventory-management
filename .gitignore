@@ -1,32 +1,28 @@
-# Environment variables and secrets
-.env
-.env.*
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
 
-# Allow the example environment file
-!.env.example
-
-# Python virtual environment
+# Virtual environment
 .venv/
 venv/
 env/
 
-# Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
+# Secrets
+.env
+.env.*
 
-# Testing and coverage
+# Local databases
+instance/*.db
+instance/*.sqlite
+instance/*.sqlite3
+
+# Test and cache files
 .pytest_cache/
+.mypy_cache/
 .coverage
 htmlcov/
 
-# IDE files
+# Editor
 .vscode/
-.idea/
-
-# Operating system files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
+gunicorn
